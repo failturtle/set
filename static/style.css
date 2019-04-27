@@ -1,0 +1,53 @@
+h1, h2, h3, h4, h5, h6, p, a, button, td {
+	font-family: "Arial", sans-serif;
+}
+
+td.layout {
+	margin: 10px;
+	/*width: 30%;*/
+	vertical-align: top;
+}
+
+table.layout {
+	width: 100%;
+	table-layout: fixed;
+}
+
+div.wrapper {
+	max-width: 1300px;
+	margin: 0px auto;
+}
+
+span.red {
+	color: red;
+}
+
+span.blue {
+	color: blue;
+}
+
+button {
+	border: none;
+	background: #3498db;
+	color: #ffffff;
+	margin-bottom: 5px;
+}
+
+button:hover {
+	background: #3cb0fd;
+}
+
+p.alert {
+	position: absolute;
+	color: red;
+	/*visibility: hidden;*/
+	display: none;
+}
+
+.big {
+	font-size: 1.5em;
+}
+
+table.hands tr {
+	height: 30px;
+}
