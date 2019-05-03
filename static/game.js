@@ -12,16 +12,6 @@ cc.src = "../static/img/cards.png"
 cc.onload = main
 var currentCoordinates = []
 
-function constructor() {
-	canvas = document.getElementById("canvas");
-	cards = new Image()
-	cards.src = "./img/cards.png"
-}
-
-function logClick(evt) {
-	console.log(evt)
-}
-
 function num_to_coordinates(k) {
 	var	ret = [];
 	while (ret.length < 4) {
@@ -37,7 +27,7 @@ function isSet(a) {
 	}
 	var c = [];
 	for (var i = 0; i < 3; i++) {
-		c.push(num_to_coordinates(a[i]))
+		c.push(num_to_coordinates(current_cards[a[i]]))
 	}
 	for (var i = 0; i < 4; i++) {
 		var s = new Set();
@@ -63,7 +53,6 @@ function getImageCoordinate(a) {
 }
 
 function draw (cards) {
-	console.log('fuck')
 	var ctx = canvas.getContext("2d");
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -105,11 +94,11 @@ function updatePlayerScores(player_scores) {
 	l = player_scores.length
 	s = "<p> Number of player(s): " + l.toString() + "<br></p>"
 	if (player_id === -1) {
-		console.log("wtf")
 		s += '<p><button id="join" onclick=joinAsNewPlayer()> join </button><br><br></p>'
 	} else {
 		s += '<p>You are player ' + player_id.toString() + '.<br><br></p>'
 	}
+	s += '<p> Scores <br> </p>'
 	s += "<table>"
 	for (var i = 0; i < l; i++) {
 		s += '<tr>'
@@ -124,16 +113,29 @@ function updatePlayerScores(player_scores) {
 	$('#players').html(s)
 }
 
+function equal(a1, a2) {
+	if (a1.length != a2.length) {
+		return false;
+	}
+	for (var i = 0; i < a1.length; i++) {
+		if (a1[i] != a2[i]) return false;
+	}
+	return true;
+}
+
 function updateTheView(data, status) {
 	$("p.alert").hide();
 	updatePlayerScores(data['player_scores'])
-	current_cards = data['cards']
+	if (!equal(current_cards, data['cards'])) {
+		isSelected = []
+		current_cards = data['cards']
+	}
 	draw(current_cards)
-	poll_timer = window.setTimeout(getGameData, 400);
+	poll_timer = window.setTimeout(getGameData, 500);
 }
 
 function handleUpdateError(request, status, error) {
-	poll_timer = window.setTimeout(getGameData, 400);
+	poll_timer = window.setTimeout(getGameData, 500);
 	$("p.alert").show();
 	console.log('Ajax request failed:', status, ', ', error)
 }
@@ -150,23 +152,15 @@ function getGameData() {
 	});
 }
 
-function updateCanvas(height) {
-	console.log('hello')
-	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");
-	ctx.fillStyle = "rgb("+Math.random()*256+"," + Math.random()*256+","+Math.random()*256+")";
-	ctx.fillRect(0, 0, 150, height);
-}
-
 function sendResult(isSelected) {
 	$.ajax({
 		'type': 'POST',
-		'url': '/gamestate',
-		'data': isSelected,
-		'dataType': 'json',
+		'url': './action',
+		'data': JSON.stringify(isSelected),
+		'dataType': 'application/json',
 		'timeout': query_timeout,
-		'success': updateTheView,
-		'error': handleUpdateError,
+		'success': getGameData,
+		'error': handleUpdateError
 	});
 }
 	
@@ -176,13 +170,20 @@ function toggle(evt) {
 	for (var i = 0; i < currentCoordinates.length; i++) {
 		var xx = currentCoordinates[i][0];
 		var yy = currentCoordinates[i][1];
-		if (xx <= x && yy <= y && x <= xx + CARD_WIDTH && y <= yy + CARD_HEIGHT) {
+		if (xx <= x && yy <= y && x <= xx + CARD_WIDTH && y <= yy + CARD_HEIGHT && player_id !== -1) {
 			if (isSelected.indexOf(i) == -1) {
 				isSelected.push(i)
 				if (isSelected.length == 3) {
 					if (isSet(isSelected)) {
-						sendResult(isSelected);
+						sendResult({
+							'player_id': player_id,
+							'cards': isSelected
+						});
+						isSelected = []
+						getGameData();
+						break;
 					}
+					isSelected = []
 				}
 			} else {
 				isSelected.splice(isSelected.indexOf(i), 1);
@@ -190,19 +191,14 @@ function toggle(evt) {
 			break;
 		}
 	}
+	draw(current_cards);
 }
 
 
 function updateNewPlayer(data, status) {
 	player_id = Number(data);
-	poll_timer = window.setTimeout(getGameData, 400);
+	poll_timer = window.setTimeout(getGameData, 500);
 	$("button.join").hide()
-}
-
-function handleUpdateError(request, status, error) {
-	poll_timer = window.setTimeout(getGameData, 800);
-	$("p.alert").show();
-	console.log('Ajax request failed:', status, ', ', error)
 }
 
 function joinAsNewPlayer() {
@@ -217,27 +213,8 @@ function joinAsNewPlayer() {
 }
 
 function main() {
-	console.log("DIU2")
-
-	
-	// s.updateCanvas(123)
-	
 	var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext("2d");
 	canvas.addEventListener("click", toggle);
-	// document.addEventListener('click', draw, current_cards);
-	// ctx.fillSTyle = "blue";
-	// ctx.fillRect(0, 0, canvas.width, canvas.height);
-	// while (isImageLoaded == 0) {
-	// 	console.log("wait!");
-	// }
-	c = []
-	for (var i = 0; i < 12; i++) {
-		c.push(Math.floor((Math.random() * 81) + 1));
-	}
-	// draw(c);
-	// console.log("DIU")
-	// window.setInterval(draw, 200, current_cards);
-	poll_timer = window.setInterval(getGameData, 400)
-	// window.setInterval(set.updateCanvas, 1000, 123);
+	joinAsNewPlayer();
+	poll_timer = window.setInterval(getGameData, 500)
 }

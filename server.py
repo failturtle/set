@@ -28,6 +28,13 @@ def page_static_img(filename):
 all_games = {}
 cards_queue = {}
 
+def get_num_players(game_id):
+	cur = all_games[game_id]
+	return cur["num_players"]
+
+def isThereNextCard(game_id):
+	return len(cards_queue[game_id]) > 0
+
 def getNextCard(game_id):
 	c = cards_queue[game_id]
 	r = -1
@@ -36,6 +43,45 @@ def getNextCard(game_id):
 		c = c[1:]
 		cards_queue[game_id] = c
 	return r
+
+def isSet(a):
+	if len(a) != 3:
+		return False
+	c0 = num_to_coordinates(a[0])
+	c1 = num_to_coordinates(a[1])
+	c2 = num_to_coordinates(a[2])
+	for i in range(4):
+		s = set()
+		s.add(c0[i])
+		s.add(c1[i])
+		s.add(c2[i])
+		if len(s) == 2:
+			return False
+	return True
+
+def isThereASet(a):
+	l = len(a)
+	for i in range(l):
+		for j in range(l):
+			for k in range(l):
+				if i != j and i != k and j != k:
+					if isSet(a[i], a[j], a[k]):
+						return True
+	return False
+
+def num_to_coordinates(k):
+	ret = []
+	while len(ret) < 4:
+		ret.append(k % 3)
+		k //= 3
+	return ret
+
+def ensureValidSet(game_id):
+	while isThereNextCard(game_id) and not isThereASet(all_games[game_id].cards):
+		all_games[game_id].cards.append(getNextCard)
+		all_games[game_id].cards.append(getNextCard)
+		all_games[game_id].cards.append(getNextCard)
+
 
 def create_new_game(game_id):
 	if game_id not in all_games:
@@ -53,14 +99,29 @@ def create_new_game(game_id):
 		all_games[game_id] = newGame
 	return all_games[game_id]
 
-def get_num_players(game_id):
-	cur = all_games[game_id]
-	return cur["num_players"]
+def getNextCard(game_id):
+	c = cards_queue[game_id][0]
+	cards_queue[game_id] = cards_queue[game_id][1:]
+	return c
 
 @bottle.route('/<game_id>/game_state')
 def page_game(game_id):
 	create_new_game(game_id)
 	return json.dumps(all_games[game_id])
+
+@bottle.post('/<game_id>/action')
+def post_game(game_id):
+	data = json.loads(bottle.request.body.read())
+	player = int(data['player_id']) - 1
+	cards = data['cards']
+	all_games[game_id]['last_set'] = cards
+	all_games[game_id]['last_set_player'] = player
+	all_games[game_id]['player_scores'][player] += 1
+	for c in cards:
+		all_games[game_id]['cards'][c] = getNextCard(game_id)
+	f = all_games[game_id]['cards']
+	all_games[game_id]['cards'].remove(-1)
+
 
 @bottle.get('/<game_id>/newplayer')
 def api_newplayer(game_id):
