@@ -45,12 +45,13 @@ def create_new_game(game_id):
 		cards = cards[:12]
 		newGame = {
 			"num_players": 0,
+			"player_scores": [],
 			"cards": cards,
 			"last_set": [],
 			"last_set_player": -1
 		}
 		all_games[game_id] = newGame
-	return
+	return all_games[game_id]
 
 def get_num_players(game_id):
 	cur = all_games[game_id]
@@ -66,7 +67,8 @@ def api_newplayer(game_id):
 	create_new_game(game_id)
 	cur = all_games[game_id]
 	cur["num_players"] += 1
-	return cur["num_players"]
+	cur["player_scores"].append(0)
+	return json.dumps(cur["num_players"])
 
 # Select underlying server
 server = 'wsgiref'

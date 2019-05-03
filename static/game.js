@@ -102,24 +102,29 @@ function getScreenCoordinate(idx, num_cards) {
 
 function updatePlayerScores(player_scores) {
 	s = "<table>"
-	l = len(player_scores)
-	s += '<tr>' + "Number of players: " + str(l) + "</tr>"
-	for i in range(l):
+	l = player_scores.length
+	s += '<tr>' + "Number of players: " + l.toString() + "</tr>"
+	for (var i = 0; i < l; i++) {
 		s += '<tr>'
-		s += '<td>' + "Player " + str(i+1) + ":</td>"
-		s += '<td>' + str(player_scores[i+1]) + "</td>"
+		s += '<td>' + "Player " + (i+1).toString() + ":</td>"
+		s += '<td>' + (player_scores[i]).toString() + "</td>"
 		s += '</tr>'
+	}
+	if (player_id === -1) {
+		s += '<tr> <button id="join" onclick=joinAsNewPlayer()> join </button> </tr>'
+	}
 	s += "</table>"
 	$('#players').html(s)
 }
 
 function updateTheView(data, status) {
 	$("p.alert").hide();
+	updatePlayerScores(data['player_scores'])
 	poll_timer = window.setTimeout(getGameData, 400);
 }
 
 function handleUpdateError(request, status, error) {
-	poll_timer = window.setTimeout(getGameData, 800);
+	poll_timer = window.setTimeout(getGameData, 400);
 	$("p.alert").show();
 	console.log('Ajax request failed:', status, ', ', error)
 }
@@ -128,7 +133,7 @@ function getGameData() {
 	window.clearTimeout(poll_timer);
 	$.ajax({
 		'type': 'GET',
-		'url': './gamestate',
+		'url': './game_state',
 		'dataType': 'json',
 		'timeout': query_timeout,
 		'success': updateTheView,
@@ -180,7 +185,7 @@ function toggle(evt) {
 
 
 function updateNewPlayer(data, status) {
-	player_id = int(data);
+	player_id = Number(data);
 	poll_timer = window.setTimeout(getGameData, 400);
 	$("button.join").hide()
 }
@@ -197,7 +202,7 @@ function joinAsNewPlayer() {
 		'url': './newplayer',
 		'dataType': 'text',
 		'timeout': query_timeout,
-		'success': updateTheView,
+		'success': updateNewPlayer,
 		'error': handleUpdateError,
 	});
 }
@@ -220,9 +225,9 @@ function main() {
 	for (var i = 0; i < 12; i++) {
 		c.push(Math.floor((Math.random() * 81) + 1));
 	}
-	draw(c);
-	console.log("DIU")
-	window.setInterval(draw, 200, c)
-	
+	// draw(c);
+	// console.log("DIU")
+	// window.setInterval(draw, 200, c)
+	poll_timer = window.setInterval(getGameData, 400)
 	// window.setInterval(set.updateCanvas, 1000, 123);
 }
