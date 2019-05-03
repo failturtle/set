@@ -100,6 +100,19 @@ function getScreenCoordinate(idx, num_cards) {
 	return [xx + x * 200, yy + y * y_offset]
 }
 
+function updatePlayerScores(player_scores) {
+	s = "<table>"
+	l = len(player_scores)
+	s += '<tr>' + "Number of players: " + str(l) + "</tr>"
+	for i in range(l):
+		s += '<tr>'
+		s += '<td>' + "Player " + str(i+1) + ":</td>"
+		s += '<td>' + str(player_scores[i+1]) + "</td>"
+		s += '</tr>'
+	s += "</table>"
+	$('#players').html(s)
+}
+
 function updateTheView(data, status) {
 	$("p.alert").hide();
 	poll_timer = window.setTimeout(getGameData, 400);
