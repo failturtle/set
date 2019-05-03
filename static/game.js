@@ -5,6 +5,7 @@ var isSelected = [];
 var isImageLoaded = 0;
 var query_timeout = 2000;
 var poll_timer = null;
+var current_cards = []
 
 var cc = new Image();
 cc.src = "../static/img/cards.png"
@@ -102,7 +103,13 @@ function getScreenCoordinate(idx, num_cards) {
 
 function updatePlayerScores(player_scores) {
 	l = player_scores.length
-	s = "Number of players: " + l.toString() 
+	s = "<p> Number of player(s): " + l.toString() + "<br></p>"
+	if (player_id === -1) {
+		console.log("wtf")
+		s += '<p><button id="join" onclick=joinAsNewPlayer()> join </button><br><br></p>'
+	} else {
+		s += '<p>You are player ' + player_id.toString() + '.<br><br></p>'
+	}
 	s += "<table>"
 	for (var i = 0; i < l; i++) {
 		s += '<tr>'
@@ -110,16 +117,18 @@ function updatePlayerScores(player_scores) {
 		s += '<td>' + (player_scores[i]).toString() + "</td>"
 		s += '</tr>'
 	}
-	if (player_id === -1) {
-		s += '<tr> <button id="join" onclick=joinAsNewPlayer()> join </button> </tr>'
-	}
 	s += "</table>"
+	
+	
+
 	$('#players').html(s)
 }
 
 function updateTheView(data, status) {
 	$("p.alert").hide();
 	updatePlayerScores(data['player_scores'])
+	current_cards = data['cards']
+	draw(current_cards)
 	poll_timer = window.setTimeout(getGameData, 400);
 }
 
@@ -216,6 +225,7 @@ function main() {
 	var canvas = document.getElementById("canvas");
 	var ctx = canvas.getContext("2d");
 	canvas.addEventListener("click", toggle);
+	// document.addEventListener('click', draw, current_cards);
 	// ctx.fillSTyle = "blue";
 	// ctx.fillRect(0, 0, canvas.width, canvas.height);
 	// while (isImageLoaded == 0) {
@@ -227,7 +237,7 @@ function main() {
 	}
 	// draw(c);
 	// console.log("DIU")
-	// window.setInterval(draw, 200, c)
+	// window.setInterval(draw, 200, current_cards);
 	poll_timer = window.setInterval(getGameData, 400)
 	// window.setInterval(set.updateCanvas, 1000, 123);
 }

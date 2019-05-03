@@ -13,12 +13,18 @@ h1, h2, h3, h4, h5, h6, p, a, button, td {
 	/*margin: 10px;*/
 	grid-column: 1;
 	/*vertical-align: bottom;*/
+	text-align: left;
 }
 .right {
 	/*margin: 10px;*/
 	/*width: 10%;*/
 	/*vertical-align: bottom;*/
 	grid-column: 3;
+}
+
+#players {
+	text-align: left;
+	color: blue;
 }
 
 .center {
