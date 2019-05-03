@@ -101,9 +101,9 @@ function getScreenCoordinate(idx, num_cards) {
 }
 
 function updatePlayerScores(player_scores) {
-	s = "<table>"
 	l = player_scores.length
-	s += '<tr>' + "Number of players: " + l.toString() + "</tr>"
+	s = "Number of players: " + l.toString() 
+	s += "<table>"
 	for (var i = 0; i < l; i++) {
 		s += '<tr>'
 		s += '<td>' + "Player " + (i+1).toString() + ":</td>"
