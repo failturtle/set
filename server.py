@@ -19,6 +19,9 @@ def page_gamestate(game_id):
 def page_static(filename):
 	return bottle.static_file(filename, root='./static/')
 
+@bottle.route('/static/img/<filename>')
+def page_static_img(filename):
+	return bottle.static_file(filename, root='./static/img/')
 # @bottle.post('/action')
 # def page_action():
 

@@ -6,7 +6,7 @@ var isImageLoaded = 0;
 var query_timeout = 2000;
 
 var cc = new Image();
-cc.src = "./img/cards.png"
+cc.src = "../static/img/cards.png"
 cc.onload = main
 var currentCoordinates = []
 
@@ -29,7 +29,7 @@ function num_to_coordinates(k) {
 	return ret
 }
 
-function  isSet(a) {
+function isSet(a) {
 	if (a.length != 3) {
 		return false;
 	}
@@ -86,7 +86,7 @@ function draw (cards) {
 function getScreenCoordinate(idx, num_cards) {
 	var x = idx % 3
 	var y = Math.floor(idx/3)
-	var xx = 180
+	var xx = 120
 	var yy = 30 
 	var y_offset = 150
 	if (num_cards > 12) {
