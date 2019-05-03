@@ -1,4 +1,5 @@
 import bottle
+import string
 import random
 import sys
 import json
@@ -122,6 +123,14 @@ def post_game(game_id):
 	f = all_games[game_id]['cards']
 	all_games[game_id]['cards'].remove(-1)
 
+def randomString(stringLength=10):
+    """Generate a random string of fixed length """
+    letters = string.ascii_lowercase
+    return ''.join(random.choice(letters) for i in range(stringLength))
+
+@bottle.get('/newgame')
+def newgame():
+	return bottle.redirect('/'+randomString()+'/')
 
 @bottle.get('/<game_id>/newplayer')
 def api_newplayer(game_id):
