@@ -16,6 +16,6 @@ Then have fun.
 
 You can select which port the server connects to from the command line with the `-p` command. For example, to run on port 80, you can use `python server.py -p80`.
 
-## Contibuting
+## Contributing
 
 Use Git or something.
