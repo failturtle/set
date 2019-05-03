@@ -4,6 +4,7 @@ var CARD_HEIGHT = 94;
 var isSelected = [];
 var isImageLoaded = 0;
 var query_timeout = 2000;
+var poll_timer = null;
 
 var cc = new Image();
 cc.src = "../static/img/cards.png"
@@ -99,11 +100,22 @@ function getScreenCoordinate(idx, num_cards) {
 	return [xx + x * 200, yy + y * y_offset]
 }
 
-function getGameState() {
+function updateTheView(data, status) {
+	$("p.alert").hide();
+	poll_timer = window.setTimeout(getGameData, 400);
+}
+
+function handleUpdateError(request, status, error) {
+	poll_timer = window.setTimeout(getGameData, 800);
+	$("p.alert").show();
+	console.log('Ajax request failed:', status, ', ', error)
+}
+
+function getGameData() {
 	window.clearTimeout(poll_timer);
 	$.ajax({
 		'type': 'GET',
-		'url': '/gamestate',
+		'url': './gamestate',
 		'dataType': 'json',
 		'timeout': query_timeout,
 		'success': updateTheView,
@@ -131,7 +143,6 @@ function sendResult(isSelected) {
 	});
 }
 	
-
 function toggle(evt) {
 	var x = evt.offsetX;
 	var y = evt.offsetY;
@@ -155,11 +166,23 @@ function toggle(evt) {
 }
 
 
+function updateNewPlayer(data, status) {
+	player_id = int(data);
+	poll_timer = window.setTimeout(getGameData, 400);
+	$("button.join").hide()
+}
+
+function handleUpdateError(request, status, error) {
+	poll_timer = window.setTimeout(getGameData, 800);
+	$("p.alert").show();
+	console.log('Ajax request failed:', status, ', ', error)
+}
+
 function joinAsNewPlayer() {
 	$.ajax({
 		'type': 'GET',
-		'url': '/gamestate',
-		'dataType': 'json',
+		'url': './newplayer',
+		'dataType': 'text',
 		'timeout': query_timeout,
 		'success': updateTheView,
 		'error': handleUpdateError,

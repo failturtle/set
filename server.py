@@ -37,23 +37,36 @@ def getNextCard(game_id):
 		cards_queue[game_id] = c
 	return r
 
-@bottle.route('/<game_id>/game_state')
-def page_game(game_id):
+def create_new_game(game_id):
 	if game_id not in all_games:
 		cards = [x for x in range(81)]
 		random.shuffle(cards)
 		cards_queue[game_id] = cards[12:]
 		cards = cards[:12]
 		newGame = {
-			"num_player": 0,
+			"num_players": 0,
 			"cards": cards,
 			"last_set": [],
 			"last_set_player": -1
 		}
 		all_games[game_id] = newGame
+	return
+
+def get_num_players(game_id):
+	cur = all_games[game_id]
+	return cur["num_players"]
+
+@bottle.route('/<game_id>/game_state')
+def page_game(game_id):
+	create_new_game(game_id)
 	return json.dumps(all_games[game_id])
 
-# @bottle.post('/<game_id>/newPlayer')
+@bottle.get('/<game_id>/newplayer')
+def api_newplayer(game_id):
+	create_new_game(game_id)
+	cur = all_games[game_id]
+	cur["num_players"] += 1
+	return cur["num_players"]
 
 # Select underlying server
 server = 'wsgiref'

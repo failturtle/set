@@ -7,10 +7,12 @@
 	<body>
 		<center>
 			<h1>SET</h1>
-
+			<p class="alert">Connection Error!</p> 
+			
 			<div class="stuff">
-				<div class="left">
-					Number of players: 
+				<div class="left" id="players">
+					Number of players: 0
+					<button id="join" onclick=joinAsNewPlayer()> join </button>
 				</div>
 				<div class="center">
 					<canvas id="canvas" width="800" height="600" style="border:5px solid #e6f2d4"></canvas>
