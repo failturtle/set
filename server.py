@@ -66,7 +66,7 @@ def isThereASet(a):
 		for j in range(l):
 			for k in range(l):
 				if i != j and i != k and j != k:
-					if isSet((a[i], a[j], a[k])):
+					if isSet([a[i], a[j], a[k]]):
 						return True
 	return False
 
@@ -156,4 +156,4 @@ for i in sys.argv[1:]:
 
 bottle.run(host = '0.0.0.0', port = port, server = server)
 # f =  [79, 50, 41, 53, 38, 10, 54, 0, 15, 76, 72, 26]
-# print(isSet(f))
+# print(isThereASet(f))
