@@ -121,7 +121,8 @@ def post_game(game_id):
 	for c in cards:
 		all_games[game_id]['cards'][c] = getNextCard(game_id)
 	f = all_games[game_id]['cards']
-	all_games[game_id]['cards'].remove(-1)
+	if -1 in all_games[game_id]['cards']:
+		all_games[game_id]['cards'].remove(-1)
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
