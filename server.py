@@ -45,12 +45,10 @@ def getNextCard(game_id):
 		cards_queue[game_id] = c
 	return r
 
-def isSet(a):
-	if len(a) != 3:
-		return False
-	c0 = num_to_coordinates(a[0])
-	c1 = num_to_coordinates(a[1])
-	c2 = num_to_coordinates(a[2])
+def isSet(a0, a1, a2):
+	c0 = num_to_coordinates(a0)
+	c1 = num_to_coordinates(a1)
+	c2 = num_to_coordinates(a2)
 	for i in range(4):
 		s = set()
 		s.add(c0[i])
@@ -66,7 +64,7 @@ def isThereASet(a):
 		for j in range(l):
 			for k in range(l):
 				if i != j and i != k and j != k:
-					if isSet([a[i], a[j], a[k]]):
+					if isSet(a[i], a[j], a[k]):
 						return True
 	return False
 
@@ -79,9 +77,9 @@ def num_to_coordinates(k):
 
 def ensureValidSet(game_id):
 	while isThereNextCard(game_id) and not isThereASet(all_games[game_id]['cards']):
-		all_games[game_id]['cards'].append(getNextCard)
-		all_games[game_id]['cards'].append(getNextCard)
-		all_games[game_id]['cards'].append(getNextCard)
+		all_games[game_id]['cards'].append(getNextCard(game_id))
+		all_games[game_id]['cards'].append(getNextCard(game_id))
+		all_games[game_id]['cards'].append(getNextCard(game_id))
 
 
 def create_new_game(game_id):
@@ -119,13 +117,16 @@ def post_game(game_id):
 	all_games[game_id]['last_set'] = cards
 	all_games[game_id]['last_set_player'] = player
 	all_games[game_id]['player_scores'][player] += 1
-	for c in cards:
-		all_games[game_id]['cards'][c] = getNextCard(game_id)
-	f = all_games[game_id]['cards']
-	if -1 in all_games[game_id]['cards']:
-		all_games[game_id]['cards'].remove(-1)
+	if len(all_games[game_id]['cards']) > 12:
+		for c in cards:
+			all_games[game_id]['cards'].pop(c)
+	else:
+		for c in cards:
+			all_games[game_id]['cards'][c] = getNextCard(game_id)
+		while -1 in all_games[game_id]['cards']:
+			all_games[game_id]['cards'].remove(-1)
 	ensureValidSet(game_id)
-	return '1'
+	return page_game
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
