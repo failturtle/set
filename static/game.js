@@ -3,7 +3,7 @@ var CARD_WIDTH = 164;
 var CARD_HEIGHT = 94;
 var isSelected = [];
 var isImageLoaded = 0;
-var query_timeout = 5000;
+var query_timeout = 3000;
 var poll_timer = null;
 var current_cards = []
 
@@ -90,7 +90,23 @@ function getScreenCoordinate(idx, num_cards) {
 	return [xx + x * 200, yy + y * y_offset]
 }
 
-function updatePlayerScores(player_scores) {
+function refresh() {
+	document.location.reload()
+}
+
+function restart() {
+	window.clearTimeout(poll_timer);
+	$.ajax({
+		'type': 'GET',
+		'url': './reset',
+		'dataType': 'json',
+		'timeout': query_timeout,
+		'success': refresh,
+		'error': handleUpdateError,
+	});
+}
+
+function updatePlayerScores(player_scores, has_game_ended = 0) {
 	l = player_scores.length
 	s = "<p> Number of player(s): " + l.toString() + "<br></p>"
 	if (player_id === -1) {
@@ -108,7 +124,10 @@ function updatePlayerScores(player_scores) {
 	}
 	s += "</table>"
 	
-	
+	if (has_game_ended) {
+		s += "<p><bold><br><br>GAME OVER!</bold></p>"
+		s += "<button onclick=restart()> Click here to restart the game! </button>"
+	}
 
 	$('#players').html(s)
 }
@@ -125,17 +144,22 @@ function equal(a1, a2) {
 
 function updateTheView(data, status) {
 	$("p.alert").hide();
-	updatePlayerScores(data['player_scores'])
+
+	updatePlayerScores(data['player_scores'], data['has_game_ended'])
 	if (!equal(current_cards, data['cards'])) {
 		isSelected = []
 		current_cards = data['cards']
 	}
 	draw(current_cards)
-	poll_timer = window.setTimeout(getGameData, 500);
+	if (data['has_game_ended'] == 0) {
+		poll_timer = window.setTimeout(getGameData, 300);
+	} else {
+		window.clearTimeout(poll_timer);
+	}
 }
 
 function handleUpdateError(request, status, error) {
-	poll_timer = window.setTimeout(getGameData, 500);
+	poll_timer = window.setTimeout(getGameData, 300);
 	$("p.alert").show();
 	console.log('Ajax request failed:', status, ', ', error)
 }
@@ -197,7 +221,7 @@ function toggle(evt) {
 
 function updateNewPlayer(data, status) {
 	player_id = Number(data);
-	poll_timer = window.setTimeout(getGameData, 500);
+	poll_timer = window.setTimeout(getGameData, 300);
 	$("button.join").hide()
 }
 
@@ -216,5 +240,5 @@ function main() {
 	var canvas = document.getElementById("canvas");
 	canvas.addEventListener("click", toggle);
 	joinAsNewPlayer();
-	poll_timer = window.setInterval(getGameData, 500)
+	poll_timer = window.setInterval(getGameData, 300)
 }

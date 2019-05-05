@@ -81,25 +81,34 @@ def ensureValidSet(game_id):
 		all_games[game_id]['cards'].append(getNextCard(game_id))
 		all_games[game_id]['cards'].append(getNextCard(game_id))
 
+def get_new_game(game_id):
+	cards = [x for x in range(81)]
+	random.shuffle(cards)
+	cards_queue[game_id] = cards[12:]
+	cards = cards[:12]
+	newGame = {
+		"num_players": 0,
+		"player_scores": [],
+		"cards": cards,
+		"last_set": [],
+		"last_set_player": -1,
+		"has_game_ended": 1
+	}
+	all_games[game_id] = newGame
+
+def reset_game(game_id):
+	all_games.pop(game_id, None)
+	return create_new_game(game_id)
 
 def create_new_game(game_id):
 	if game_id not in all_games:
-		cards = [x for x in range(81)]
-		random.shuffle(cards)
-		cards_queue[game_id] = cards[12:]
-		cards = cards[:12]
-		newGame = {
-			"num_players": 0,
-			"player_scores": [],
-			"cards": cards,
-			"last_set": [],
-			"last_set_player": -1
-		}
-		all_games[game_id] = newGame
+		newGame = get_new_game(game_id)
 	ensureValidSet(game_id)
 	return all_games[game_id]
 
 def getNextCard(game_id):
+	if not isThereNextCard(game_id):
+		return -1
 	c = cards_queue[game_id][0]
 	cards_queue[game_id] = cards_queue[game_id][1:]
 	return c
@@ -126,7 +135,7 @@ def post_game(game_id):
 		while -1 in all_games[game_id]['cards']:
 			all_games[game_id]['cards'].remove(-1)
 	ensureValidSet(game_id)
-	return page_game
+	return bottle.HTTPResponse(status=200, body='')
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
@@ -144,6 +153,11 @@ def api_newplayer(game_id):
 	cur["num_players"] += 1
 	cur["player_scores"].append(0)
 	return json.dumps(cur["num_players"])
+
+@bottle.get('/<game_id>/reset')
+def reset(game_id):
+	reset_game(game_id)
+	return bottle.redirect('/'+game_id+'/')
 
 # Select underlying server
 server = 'wsgiref'
