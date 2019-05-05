@@ -154,6 +154,6 @@ for i in sys.argv[1:]:
 	if i[:2] == '-p':
 		port = int(i[2:])
 
-# bottle.run(host = '0.0.0.0', port = port, server = server)
-f =  [79, 50, 41, 53, 38, 10, 54, 0, 15, 76, 72, 26]
-print(isSet(f))
+bottle.run(host = '0.0.0.0', port = port, server = server)
+# f =  [79, 50, 41, 53, 38, 10, 54, 0, 15, 76, 72, 26]
+# print(isSet(f))
