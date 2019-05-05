@@ -78,7 +78,7 @@ def num_to_coordinates(k):
 	return ret
 
 def ensureValidSet(game_id):
-	while isThereNextCard(game_id) and not isThereASet(all_games[game_id].cards):
+	while isThereNextCard(game_id) and not isThereASet(all_games[game_id]['cards']):
 		all_games[game_id].cards.append(getNextCard)
 		all_games[game_id].cards.append(getNextCard)
 		all_games[game_id].cards.append(getNextCard)
