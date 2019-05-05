@@ -79,9 +79,9 @@ def num_to_coordinates(k):
 
 def ensureValidSet(game_id):
 	while isThereNextCard(game_id) and not isThereASet(all_games[game_id]['cards']):
-		all_games[game_id].cards.append(getNextCard)
-		all_games[game_id].cards.append(getNextCard)
-		all_games[game_id].cards.append(getNextCard)
+		all_games[game_id]['cards'].append(getNextCard)
+		all_games[game_id]['cards'].append(getNextCard)
+		all_games[game_id]['cards'].append(getNextCard)
 
 
 def create_new_game(game_id):
@@ -125,6 +125,7 @@ def post_game(game_id):
 	if -1 in all_games[game_id]['cards']:
 		all_games[game_id]['cards'].remove(-1)
 	ensureValidSet(game_id)
+	return '1'
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
@@ -153,6 +154,6 @@ for i in sys.argv[1:]:
 	if i[:2] == '-p':
 		port = int(i[2:])
 
-bottle.run(host = '0.0.0.0', port = port, server = server)
-# f =  [40, 59, 32, 51, 31, 61, 13, 21, 26, 47, 78, 36]
-# print(isSet(f))
+# bottle.run(host = '0.0.0.0', port = port, server = server)
+f =  [79, 50, 41, 53, 38, 10, 54, 0, 15, 76, 72, 26]
+print(isSet(f))
