@@ -66,7 +66,7 @@ def isThereASet(a):
 		for j in range(l):
 			for k in range(l):
 				if i != j and i != k and j != k:
-					if isSet(a[i], a[j], a[k]):
+					if isSet((a[i], a[j], a[k])):
 						return True
 	return False
 
@@ -98,6 +98,7 @@ def create_new_game(game_id):
 			"last_set_player": -1
 		}
 		all_games[game_id] = newGame
+	ensureValidSet(game_id)
 	return all_games[game_id]
 
 def getNextCard(game_id):
@@ -123,6 +124,7 @@ def post_game(game_id):
 	f = all_games[game_id]['cards']
 	if -1 in all_games[game_id]['cards']:
 		all_games[game_id]['cards'].remove(-1)
+	ensureValidSet(game_id)
 
 def randomString(stringLength=10):
     """Generate a random string of fixed length """
@@ -152,3 +154,5 @@ for i in sys.argv[1:]:
 		port = int(i[2:])
 
 bottle.run(host = '0.0.0.0', port = port, server = server)
+# f =  [40, 59, 32, 51, 31, 61, 13, 21, 26, 47, 78, 36]
+# print(isSet(f))

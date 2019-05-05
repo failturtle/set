@@ -3,7 +3,7 @@ var CARD_WIDTH = 164;
 var CARD_HEIGHT = 94;
 var isSelected = [];
 var isImageLoaded = 0;
-var query_timeout = 2000;
+var query_timeout = 5000;
 var poll_timer = null;
 var current_cards = []
 
