@@ -92,7 +92,7 @@ def get_new_game(game_id):
 		"cards": cards,
 		"last_set": [],
 		"last_set_player": -1,
-		"has_game_ended": 1
+		"has_game_ended": 0
 	}
 	all_games[game_id] = newGame
 
