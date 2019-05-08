@@ -80,6 +80,9 @@ def ensureValidSet(game_id):
 		all_games[game_id]['cards'].append(getNextCard(game_id))
 		all_games[game_id]['cards'].append(getNextCard(game_id))
 		all_games[game_id]['cards'].append(getNextCard(game_id))
+	if not isThereASet(all_games[game_id]['cards']):
+		return 0
+	return 1
 
 def get_new_game(game_id):
 	cards = [x for x in range(81)]
@@ -123,6 +126,8 @@ def post_game(game_id):
 	data = json.loads(bottle.request.body.read())
 	player = int(data['player_id']) - 1
 	cards = data['cards']
+	if not isSet(cards[0], cards[1], cards[2]):
+		return bottle.HTTPResponse(status=200, body='')
 	all_games[game_id]['last_set'] = cards
 	all_games[game_id]['last_set_player'] = player
 	all_games[game_id]['player_scores'][player] += 1
@@ -134,7 +139,8 @@ def post_game(game_id):
 			all_games[game_id]['cards'][c] = getNextCard(game_id)
 		while -1 in all_games[game_id]['cards']:
 			all_games[game_id]['cards'].remove(-1)
-	ensureValidSet(game_id)
+	if not ensureValidSet(game_id):
+		all_games[game_id]['has_game_ended'] = 1
 	return bottle.HTTPResponse(status=200, body='')
 
 def randomString(stringLength=10):
