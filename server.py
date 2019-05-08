@@ -81,8 +81,8 @@ def ensureValidSet(game_id):
 		all_games[game_id]['cards'].append(getNextCard(game_id))
 		all_games[game_id]['cards'].append(getNextCard(game_id))
 	if not isThereASet(all_games[game_id]['cards']):
-		return 0
-	return 1
+		return False
+	return True
 
 def get_new_game(game_id):
 	cards = [x for x in range(81)]
